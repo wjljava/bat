@@ -165,7 +165,7 @@ pub fn run_with_error_handler(
 }
 ```
 
-**小白会问：为什么错误有时写进 pager、有时写 stderr？**
+**学习者会问：为什么错误有时写进 pager、有时写 stderr？**
 `attached_to_pager` 时，bat 的**整个输出都进了 less**，
 错误也得进 pager 才能"看到"（否则 less 满屏内容，错误却打到 less 背后看不见了）。
 非 pager 时错误就正常打 stderr。
@@ -284,7 +284,7 @@ fn try_pager(single_screen_action, wrapping_mode, pager_from_config) -> Result<S
 }
 ```
 
-**`-R -F -S -K --no-init` 这串参数的小白解释**（最常问）：
+**`-R -F -S -K --no-init` 这串参数的学习者解释**（最常问）：
 - `-R`：less 默认把 ANSI 颜色码**原样显示**成乱码（`\x1b[31m` 那种）。
   `-R`（= `--RAW-CONTROL-CHARS`）告诉 less "这些是真颜色，渲染出来"。
   这是 bat 配色能进 less 的关键。
@@ -309,7 +309,7 @@ pub fn retrieve_less_version(less_path: &dyn AsRef<OsStr>) -> Option<LessVersion
     }
 }
 ```
-**小白会问：为什么 BusyBox 的 `--version` 是失败？**
+**学习者会问：为什么 BusyBox 的 `--version` 是失败？**
 BusyBox 的 less 是个多命令复用程序，`--version` 它不认（报 unrecognized option 到 stderr），
 但报错文本里有 `BusyBox v1.35.0`。bat 据此识别"这是 BusyBox"，
 就不加 `-K`（BusyBox 版不支持）。这是为了在**嵌入式/精简系统**上也能工作。
@@ -422,7 +422,7 @@ impl BuiltinPager {
 }
 ```
 
-**小白会问：minus 是什么，为什么 bat 要内嵌一个 pager？**
+**学习者会问：minus 是什么，为什么 bat 要内嵌一个 pager？**
 `minus` 是 Bat 作者（sharkdp）自己写的 Rust pager（less 的替代品，支持颜色/搜索/动态输出）。
 `--pager=builtin` 让 bat **不依赖系统 less**，在自己进程内分页。
 好处：纯 Rust、跨平台一致、能直接"动态分页"（文件边生成边翻页，
@@ -487,7 +487,7 @@ pub fn handle<'a>(&'a mut self) -> Result<OutputHandle<'a>> {
 }
 ```
 
-**`FmtWrite` vs `IoWrite` 的关键差别**（小白易混）：
+**`FmtWrite` vs `IoWrite` 的关键差别**（学习者易混）：
 - `IoWrite`：底层是**文件/管道**（less 的 stdin、你的终端）。
   `flush` 是真 flush。ch5 的 `-u` 模式每行 `writer.flush()`（controller.rs:343）
   对它**立刻可见**（流式）。
@@ -496,7 +496,7 @@ pub fn handle<'a>(&'a mut self) -> Result<OutputHandle<'a>> {
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`#[cfg(feature = "paging")]` 门控**：整章的 pager 逻辑都包在 feature 里
    （Cargo.toml 的 `paging` feature）。库调用方可以关掉 paging，

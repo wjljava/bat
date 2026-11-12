@@ -48,7 +48,7 @@ matches.get_flag("help") → false（没 -h）
 返回 App { matches, interactive_output=true, number_from_cli=true, ... }
 ```
 
-**小白注意**：`-n` 在这里被记成 `number_from_cli=true`。
+**学习者注意**：`-n` 在这里被记成 `number_from_cli=true`。
 这决定了后面 `loop_through`（ch2）= **false**（交互渲染，不是批处理）。
 因为 `-n` 在 `loop_through` 那串"或条件"里：
 `loop_through = !(interactive_output || ... || number_from_cli || ...)`
@@ -187,7 +187,7 @@ loop {
 }
 ```
 
-**`max_buffered_line_number` 的 `Tentative` vs `Final`**（小白易懵）：
+**`max_buffered_line_number` 的 `Tentative` vs `Final`**（学习者易懵）：
 - 还有后续行在 buffer → 这是文件中间的某行 → `Tentative(后续行号)`
 - buffer 空 + 已 EOF → 这是文件最后一行 → `Final(本行行号)`
 ch5 `print_line` 把 `max_buffered_line_number` 传给 `highlighted_lines.check`

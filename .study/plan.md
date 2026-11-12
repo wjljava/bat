@@ -82,8 +82,17 @@ run_controller() → Controller::run() → print_input()
 | 7 | 装饰与样式：`Decoration` / `Colors` / `StyleComponent`（行号、git、网格怎么画） | `decorations.rs`、`style.rs`、`diff.rs` | [x] |
 | 8 | 端到端：`bat -n --theme Monokai foo.rs` 完整执行路径（复盘） | 综合 | [x] |
 
+## 编译期支线（非编号章节，读完 ch8 后再看）
+
+| 支线 | 主题 | 核心文件 | 状态 |
+|---|------|---------|------|
+| build | build 目录：build 脚本先于主程序跑、模板渲染、`cargo:rustc-env`+`include_str!` 嵌入（`syntax_mapping.rs` 可跳过的 codegen） | `build/{main,application,util,syntax_mapping}.rs`、`Cargo.toml` 的 `[build-dependencies]` | [x] |
+
 > 架构总览另见独立文件 `architecture.md`（仓库布局、模块分工、7 个判断深挖、跨项目对比），
 > 和 ch1~ch8 并列，不进编号序列。
+>
+> **build 学习路线**另见独立文件 `build.md`（同上，不进编号序列）——
+> 讲的是"编译期把素材焊进二进制"那条支线，**学完 ch8 后再看**。
 
 ## 学习节奏约定
 

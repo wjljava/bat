@@ -31,7 +31,7 @@ bat/
 └── tests/ examples/    ← 集成测试 + 库用法示例
 ```
 
-> 小白的疑问：为什么 `src/`（库）和 `src/bin/bat/`（程序）要分开？
+> 学习者的疑问：为什么 `src/`（库）和 `src/bin/bat/`（程序）要分开？
 > 因为 bat **既是库又是 CLI**（判断 1）。`src/lib.rs` 的 doc 注释写了
 > `PrettyPrinter::new().input_from_bytes(...).print()` 这种"库调用"示例——
 > 库调用方**不该**被迫依赖 `clap`（参数解析库），所以"命令行解析"全放 `src/bin/bat/`，
@@ -201,7 +201,7 @@ ripgrep（纯 CLI）用 anyhow；bat（库+CLI）**库部分 thiserror、CLI 部
 
 ---
 
-## 小白检验问题
+## 学习者检验问题
 
 1. 为什么"命令行解析"（`clap_app.rs`）放 bin 不放 lib？放 lib 会让库调用方多依赖什么？
 2. `assets_from_cache_or_binary` 版本不匹配时为什么**报错**而不是静默降级到内置？

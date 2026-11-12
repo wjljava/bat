@@ -114,7 +114,7 @@ fn print_line(
 }
 ```
 
-**小白会问：`from_utf8_lossy` 是什么？直接 `from_utf8` 报错不更好？**
+**学习者会问：`from_utf8_lossy` 是什么？直接 `from_utf8` 报错不更好？**
 
 Lossy 把**非法字节**换成 U+FFFD（替换符）而不是报错。
 bat 读的文件可能含截断的 UTF-8（二进制被当文本、损坏文件），
@@ -201,7 +201,7 @@ ch2 讲过 `squeeze_lines` 字段；`consecutive_empty_lines` 是 `InteractivePr
     }
 ```
 
-**`cursor_max` 的含义**（小白重点）：
+**`cursor_max` 的含义**（学习者重点）：
 一开始 `cursor_max = term_width`（整行宽）。
 画完行号（4 列）+ 空间（1 列）后，`cursor_max` 变成 `term_width - 5`。
 这就是"内容区还能放多少列"——**换行/截断都看它**，而非原始终端宽。
@@ -385,7 +385,7 @@ fn char_width(c: char) -> usize {
 `width()` 返回 `None`，但它们在终端上按"caret 记法"（`^@`）占 **2 列**，
 所以兜底成 2。这个细节影响"截断时算得准不准"。
 
-**小白会问：`panel_wrap` 为什么要"懒生成"（`is_none()` 才建）？**
+**学习者会问：`panel_wrap` 为什么要"懒生成"（`is_none()` 才建）？**
 因为**大多数行不会换行**（正常文本一行放得下）。只有真正折行时
 才需要"续行装饰前缀"（第二行左边补空格对齐行号区）。
 懒生成 = 不折行的行**零成本**，避免每行都算一遍装饰前缀字符串。
@@ -460,7 +460,7 @@ pub fn to_ansi_color(color: highlighting::Color, true_color: bool) -> Option<nu_
 }
 ```
 
-**小白会问：为什么主题能用 `#RRGGBBAA` 这种"RGBA 编码 RGB"？**
+**学习者会问：为什么主题能用 `#RRGGBBAA` 这种"RGBA 编码 RGB"？**
 
 syntect 的 `Color` 是固定 4 字节 RGBA。bat 借用"透明通道 alpha"的取值**额外编码含义**：
 - `a=00`：这是"终端 8/16 色调色板"，`r` 字节是调色板号（不是红值）
@@ -472,7 +472,7 @@ syntect 的 `Color` 是固定 4 字节 RGBA。bat 借用"透明通道 alpha"的�
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`write!` 的"输出目标无关"**：`write!(handle, …)` 对 `handle`
    （`OutputHandle`，ch6 讲它接到哪）写，**不关心**目标是终端还是 less。

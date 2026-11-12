@@ -90,7 +90,7 @@ Some 就直接用，跳过自动检测。
 区别：`language` 是"我就用这个"，`fallback` 是"检测不到就退而用这个"。
 两者都有时 `language` 优先。
 
-**小白会问：为什么要有 `fallback_syntax`？** 因为有些文件按扩展名检测不出语言
+**学习者会问：为什么要有 `fallback_syntax`？** 因为有些文件按扩展名检测不出语言
 （比如 `.conf`），但你想"检测不到就默认当 INI 看"，`-m '*.conf:INI'` 做不到
 （那是强制映射），`--fallback-syntax INI` 才是"兜底"。
 
@@ -137,7 +137,7 @@ tab_width: ... .unwrap_or(
 
 ---
 
-### 两个"派生"字段（小白最容易懵）
+### 两个"派生"字段（学习者最容易懵）
 
 ```rust
 pub loop_through: bool,   // 不是直接来自某个 flag，是一堆条件的"或非"
@@ -169,7 +169,7 @@ let mut printer = if self.config.loop_through {
 值为 `truecolor` 或 `24bit` 才 true。ch5 上色时用 true/false 决定
 "24bit 色"还是"8/16 色降级"。
 
-**小白会问：`true_color` 为什么不跟 `colored_output` 一个字段？**
+**学习者会问：`true_color` 为什么不跟 `colored_output` 一个字段？**
 因为"要不要上色"（`colored_output`）和"上多深的色"（`true_color`）是两件事：
 可以 `colored_output=true` 但终端只支持 16 色，那 `true_color=false`，
 syntect 的 24bit 色会被 `terminal::to_ansi_color` 降级成 16 色调色板。
@@ -306,7 +306,7 @@ else if self.strip_ansi { line = strip_ansi(&line).into() }
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`#[derive(Debug, Clone, Default)]`**：`Config` 三行宏给它派生了
    "能打印 / 能克隆 / 有默认值"。`Default` 让 `Config { ..Default::default() }`

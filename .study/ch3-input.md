@@ -77,7 +77,7 @@ fn named<'a>(input: Input<'a>, name: Option<&Path>) -> Input<'a> {
 }
 ```
 
-**小白会问：`name` 是干嘛的？`bat foo.rs` 不就有路径了吗，为什么还要"假装文件名"？**
+**学习者会问：`name` 是干嘛的？`bat foo.rs` 不就有路径了吗，为什么还要"假装文件名"？**
 
 两个场景：
 1. `echo hi | bat -n main.rs`：输入其实是 stdin，但你**骗** bat "当成 main.rs 读"，
@@ -129,7 +129,7 @@ pub struct InputDescription {
 ```
 `title()` 返回 `title` 优先，没给就 `name`。header 显示的就是它。
 
-**小白会问：`description.title()` 和 `metadata.user_provided_name` 有什么区别？**
+**学习者会问：`description.title()` 和 `metadata.user_provided_name` 有什么区别？**
 `user_provided_name` 是 `Open` 时用来**重新探测 syntax 的路径**
 （ch4 `input.path()` 读它）；`title` 是**显示**给 header 用的字符串。
 `-n main.rs` 时两者都设，但语义不同：一个影响"按什么语言高亮"，一个影响"显示什么"。
@@ -198,7 +198,7 @@ pub(crate) fn open<R: BufRead + 'a>(
 }
 ```
 
-**小白会问：`clircle::Identifier` 是干嘛的？**
+**学习者会问：`clircle::Identifier` 是干嘛的？**
 `clircle` 是个小库，能判断"两个 fd 是不是同一个文件"。
 bat 把输入和输出绑到同一个终端/文件时（比如 `bat > foo` 且读的就是 `foo`），
 会形成**读自己刚写的内容**的死循环。`surely_conflicts_with` 提前发现就报错。
@@ -283,7 +283,7 @@ fn inspect_content_type(first_line: &[u8]) -> Option<ContentType> {
     }
 }
 ```
-**小白会问：ZIP 文件明明有合法 UTF-8 字符，为什么要当二进制？**
+**学习者会问：ZIP 文件明明有合法 UTF-8 字符，为什么要当二进制？**
 因为 ZIP/PE 文件前几字节是 `PK\x03\x04` 这类魔数，光看字节"能当 UTF-8 解码"
 不代表它是文本。bat 显式把 ZIP 魔数识别成 BINARY，避免把压缩包当文本高亮。
 
@@ -321,7 +321,7 @@ pub(crate) fn read_line(&mut self, buf: &mut Vec<u8>) -> io::Result<bool> {
 }
 ```
 
-**返回值语义**（小白常搞混）：
+**返回值语义**（学习者常搞混）：
 - `Ok(true)`：读到了数据（可能是完整行，也可能是不带 `\n` 的最后一段）
 - `Ok(false)`：EOF，**buf 此时是空的**（没有新数据）
 
@@ -346,14 +346,14 @@ fn read_line_unbuffered(&mut self, buf: &mut Vec<u8>) -> io::Result<bool> {
 }
 ```
 
-**小白会问：unbuffered 为什么能"半行"就吐？**
+**学习者会问：unbuffered 为什么能"半行"就吐？**
 流式场景（`tail -f`）用户要的是"日志一写一行立刻看到"，
 等完整 `\n` 会卡住。`-u` 下 bat 自动**关掉行号**（ch1 讲过），
 因为半行没编号会乱——这是 ch2 `unbuffered` 字段的设计后果。
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`Box<dyn Read + 'a>`**：`InputKind::CustomReader` 装的是"任何实现了 `Read`
    的东西"（trait 对象），`+ 'a` 是生命周期约束——它借的内存得活过 `Input`。

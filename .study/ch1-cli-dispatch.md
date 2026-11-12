@@ -39,7 +39,7 @@ main()                              ← 程序入口（main.rs:465）
 
 ---
 
-## 小白先建立一个地图
+## 学习者先建立一个地图
 
 bat 是**单 crate** 项目（不像 ripgrep 拆十几个 crate），代码分两块：
 
@@ -76,7 +76,7 @@ fn main() {
 }
 ```
 
-**小白会问：为什么 `run` 返回的是 `Result<bool>`，不是普通 `Result<()>`？**
+**学习者会问：为什么 `run` 返回的是 `Result<bool>`，不是普通 `Result<()>`？**
 
 那个 `bool` 区分"完全成功"和"有部分文件读不到但程序跑完了"。比如
 `bat a.rs b_missing.rs c.rs`，其中 `b_missing.rs` 不存在——程序没崩，错误信息打到了
@@ -150,7 +150,7 @@ impl App {
 }
 ```
 
-**小白会问：bat 为什么连 `--help` 都要"渲染一遍"而不是直接打印文本？**
+**学习者会问：bat 为什么连 `--help` 都要"渲染一遍"而不是直接打印文本？**
 
 因为 bat 的本事就是"把文本变成带颜色的好看输出"。帮助文本也是文本，
 让它**用自己的高亮 + 主题 + 分页**来显示（app.rs:146-175），
@@ -224,7 +224,7 @@ fn matches(interactive_output: bool) -> Result<ArgMatches> {
 }
 ```
 
-**小白会问：`config_args` 为什么能直接 `extend` 进 `args`？**
+**学习者会问：`config_args` 为什么能直接 `extend` 进 `args`？**
 
 因为 `get_args_from_config_file` / `get_args_from_env_vars` 返回的也是
 `Vec<std::ffi::OsString>`——和命令行参数**同一种类型**。三层参数在"解析前"
@@ -270,7 +270,7 @@ pub fn get_args_from_env_vars() -> Vec<OsString> {
 }
 ```
 
-**小白会问：为什么环境变量是拼成 `--theme=TwoDark` 这种"等号形式"？**
+**学习者会问：为什么环境变量是拼成 `--theme=TwoDark` 这种"等号形式"？**
 
 因为后面要 `insert(0, 程序名)` 后整包丢给 clap，clap 接受 `--key=value` 形式，
 拼成字符串最省事，也保证 `=` 不会被 shell 词法再切一刀。
@@ -281,7 +281,7 @@ pub fn get_args_from_env_vars() -> Vec<OsString> {
 
 上面所有"参数名"（`--number`、`--style`、`--theme`…）的**定义**都集中在
 `src/bin/bat/clap_app.rs` 的 `build_app()`（830 行，本章不全贴，只讲关键几个）。
-小白重点理解三类：
+学习者重点理解三类：
 
 ```rust
 // 位置参数：文件名。num_args(1..) 表示至少要 1 个文件……但配合 stdin，0 个也行（从 - 读）
@@ -296,7 +296,7 @@ pub fn get_args_from_env_vars() -> Vec<OsString> {
      .default_value("auto"))
 ```
 
-**小白会问：`ArgAction::Count` 和普通 `SetTrue` 差在哪？**
+**学习者会问：`ArgAction::Count` 和普通 `SetTrue` 差在哪？**
 
 `-h`、`--diff` 这种"有/没有"的开关用 `SetTrue`（bool）。
 但 `-p` 要区分"用了一次"还是"用了两次（-pp）"，所以用 `Count`——
@@ -360,7 +360,7 @@ pub fn inputs(&self) -> Result<Vec<Input<'_>>> {
 }
 ```
 
-**小白会问：`'-'` 为什么代表 stdin？**
+**学习者会问：`'-'` 为什么代表 stdin？**
 
 这是 Unix 传统（`cat -` 读 stdin）。bat 沿用：`echo hi | bat -` 就是把管道当文件读，
 `provided_name`（用 `-n` 或 `--file-name` 指定）告诉 bat "把这个输入当成叫 X 的文件"，
@@ -369,7 +369,7 @@ pub fn inputs(&self) -> Result<Vec<Input<'_>>> {
 ### 4b. `config()` —— matches → Config
 
 这是 bat 最大的一坨 if/else（app.rs:269-537，268 行）。不逐行贴全部（太绕），
-讲**小白最该记住的几个字段的来龙去脉**：
+讲**学习者最该记住的几个字段的来龙去脉**：
 
 ```rust
 pub fn config(&self, inputs: &[Input]) -> Result<Config<'_>> {
@@ -416,7 +416,7 @@ pub fn config(&self, inputs: &[Input]) -> Result<Config<'_>> {
 }
 ```
 
-**小白会问：`loop_through` 是啥，为什么这么多条件？**
+**学习者会问：`loop_through` 是啥，为什么这么多条件？**
 
 它的含义是"批量处理模式"。正常你交互终端里看一个文件，bat 会用**交互式渲染**
 （高亮、边框、行号）。但如果你是 `bat *.rs` 一次读 20 个文件、或输出被管道，
@@ -482,7 +482,7 @@ fn style_components(&self) -> Result<StyleComponents> {
 }
 ```
 
-**小白会问：`--style` 里 `+` / `-` 前缀是干嘛的？**
+**学习者会问：`--style` 里 `+` / `-` 前缀是干嘛的？**
 
 `StyleComponentList::from_str`（style.rs:222）会把每个组件按前缀记成
 `Add` / `Remove` / `Override`。`--style="numbers,-grid,+header"` 就是
@@ -493,7 +493,7 @@ fn style_components(&self) -> Result<StyleComponents> {
 
 ## 阶段 5：`run()` 的分派表 —— 输入什么 → 走哪条路
 
-回到 `main.rs:409`。这是 bat 的"模式分派"核心，对照表（**小白拿这条当地图**）：
+回到 `main.rs:409`。这是 bat 的"模式分派"核心，对照表（**学习者拿这条当地图**）：
 
 ```rust
 match app.matches.subcommand() {
@@ -539,7 +539,7 @@ match app.matches.subcommand() {
 }
 ```
 
-**输入 → 路径 对照表（小白重点）**：
+**输入 → 路径 对照表（学习者重点）**：
 
 | 你敲的命令 | 走到哪 | 干嘛 |
 |-----------|--------|------|
@@ -550,7 +550,7 @@ match app.matches.subcommand() {
 | `bat cache --build` | `Some(("cache",..))` 且 `args_present` | 重建语法缓存 |
 | `bat -h` | `App::new` 里 help 短路（阶段 1） | 用 bat 自己渲染帮助后 exit |
 
-**小白会问：`list-languages` 为什么要把语言表"塞回 controller"打印？**
+**学习者会问：`list-languages` 为什么要把语言表"塞回 controller"打印？**
 
 因为 bat 不想维护两套"打印到终端"的逻辑。语言表本质就是"一段文本"，
 转成 `Input::from_reader` 后复用 `run_controller` 那条链（还会带行号、分页），
@@ -580,7 +580,7 @@ fn run_controller(inputs: Vec<Input>, config: &Config, cache_dir: &Path) -> Resu
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`Result<bool>` 作为返回值**：`main` 的 `Result<ExitCode>`/`Result<bool>` 是
    "把结果往上传、最后定退出码"的 Rust 惯用法。`Ok(false)` 这种"半成功"

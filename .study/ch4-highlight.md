@@ -120,7 +120,7 @@ pub(crate) fn new(
             || config.sanitize == StripAnsiMode::Auto);
 ```
 
-**小白会问：为什么"不上色"也要"匹配语法"（`needs_to_match_syntax` 里有 `strip_ansi==Auto`）？**
+**学习者会问：为什么"不上色"也要"匹配语法"（`needs_to_match_syntax` 里有 `strip_ansi==Auto`）？**
 
 因为 `--strip-ansi=Auto` 的语义是"检测到**非**纯文本才去掉 ANSI"。
 要判断"是不是纯文本"，就得先选出语法（纯文本对应 `Plain Text` 语法）。
@@ -280,7 +280,7 @@ pub(crate) fn get_syntax(
 3. **映射 `MapExtensionToUnknown`**（`-m '*.conf:unknown'` 显式标"不要检测"）
 4. **文件扩展名**（`.rs` → Rust）
 
-**小白会问：映射里 `MapTo` 和 `MapToUnknown` 什么区别？**
+**学习者会问：映射里 `MapTo` 和 `MapToUnknown` 什么区别？**
 - `MapTo("Python")`：`*.build` **强制**当 Python 高亮（即使引擎觉得不对）。
 - `MapToUnknown`：`*.conf` **强制不检测**（当纯文本），但你还能用 `--language` 覆盖。
 `--ignored-suffix`（ch1 的 flag）就是批量加 `MapExtensionToUnknown` 规则。
@@ -364,7 +364,7 @@ fn highlight_regions_for_line<'b>(
 }
 ```
 
-**小白会问：`highlight_line` 为什么是"每行调一次"而不是一把全喂？**
+**学习者会问：`highlight_line` 为什么是"每行调一次"而不是一把全喂？**
 
 syntect 的语法定义是**逐行状态机**（一行可能开括号、开字符串，
 状态传下行）。`highlight_line` 接收"单行"，内部用 `HighlightLines`
@@ -392,7 +392,7 @@ syntect 的语法定义是**逐行状态机**（一行可能开括号、开字�
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`Option<HighlighterFromSet>`**：`InteractivePrinter.highlighter_from_set`
    是 `Option`——"不需要匹配语法时（纯二进制没 as-text）是 `None`，

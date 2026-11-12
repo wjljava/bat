@@ -84,7 +84,7 @@ pub(crate) trait Decoration {
 }
 ```
 
-**`continuation` 参数的意义**（小白易懵）：
+**`continuation` 参数的意义**（学习者易懵）：
 一行代码若**超过终端宽度**被折成两行（ch5 路 B），第二行左边也要对齐——
 但第二行**不该**再画一遍行号（行号只标第一行）。
 所以 `continuation=true` 时装饰组件要返回"续行版"：
@@ -238,7 +238,7 @@ pub enum LineChange {
 ch4 `Controller::print_input` 里 `get_git_diff(path)` 产出它，
 塞进 `InteractivePrinter.line_changes`，这里查表画标记。
 
-**小白会问：`RemovedAbove` / `RemovedBelow` 为什么分两个？**
+**学习者会问：`RemovedAbove` / `RemovedBelow` 为什么分两个？**
 git 删了一行，diff 只说"在第 N 行附近删了"，但**哪一侧**（这行上面还是下面）
 取决于删除行原本的位置。bat 按位置决定 `‾`（标在保留行的上边）还是
 `_`（标在下边），让删除的"位置感"更准。
@@ -393,7 +393,7 @@ if self.panel_width > 0 {
 
 ---
 
-## 本章涉及的 Rust 机制（小白需要补的知识点）
+## 本章涉及的 Rust 机制（学习者需要补的知识点）
 
 1. **`Vec<Box<dyn Decoration>>`（trait 对象）**：装饰可插拔（行号/git/网格任意组合），
    用 `Box<dyn>` 而非枚举，加新装饰只加实现 + push，不改 ch5 渲染循环（开闭原则）。
