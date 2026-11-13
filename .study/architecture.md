@@ -1,8 +1,8 @@
 # bat 架构总览（学习视角）
 
-> 配套：`plan.md`（数据流路线）+ ch1~ch8（逐章精读）+ 本文末尾的 7 个判断深挖。
+> 配套：`plan.md`（执行树路线）+ t01~t09（按 DFS 执行树精读）+ 本文末尾的 7 个判断深挖。
 > 本文回答的是"这个项目**长什么样**"：有几个模块、它们怎么分、每个模块干什么、
-> 几个关键设计决策**为什么**这么做。读代码前先有这张图，看每一章会轻松很多。
+> 几个关键设计决策**为什么**这么做。读代码前先有这张图，看每一篇会轻松很多。
 
 ## 一、仓库布局：一个 crate（库 + bin 双身份）
 
@@ -13,18 +13,18 @@ bat/
 ├── Cargo.toml          ← 单 crate；edition 2021；feature 裁功能（git/paging/lessopen/…）
 ├── src/               ← 库部分（可被 `use bat::…` 直接调用）
 │   ├── lib.rs          ← 库对外 API：重导出 PrettyPrinter/Config/theme/…
-│   ├── config.rs       ← Config 结构体（28 字段，ch2）
-│   ├── input.rs        ← 读文件 + 编码嗅探（ch3）
-│   ├── printer.rs      ← 渲染：Printer trait 两实现（ch4/ch5）
-│   ├── decorations.rs  ← 行号/git/网格 可插拔装饰（ch7）
-│   ├── output.rs / less.rs / pager.rs / paging.rs ← 输出 + 分页（ch6）
+│   ├── config.rs       ← Config 结构体（28 字段，t01 §3a）
+│   ├── input.rs        ← 读文件 + 编码嗅探（t06）
+│   ├── printer.rs      ← 渲染：Printer trait 两实现（t07/t08）
+│   ├── decorations.rs  ← 行号/git/网格 可插拔装饰（t07）
+│   ├── output.rs / less.rs / pager.rs / paging.rs ← 输出 + 分页（t05）
 │   ├── assets.rs       ← 语法/主题 双来源（判断 2）
 │   ├── preprocessor.rs / vscreen.rs / terminal.rs / wrapping.rs / …  ← 解码/ANSI/宽度/折行
 │   └── error.rs        ← thiserror 派生的库错误类型（判断 7）
 ├── src/bin/bat/        ← 可执行程序部分（只干"和命令行/终端/退出码打交道"）
-│   ├── main.rs         ← run() 分派表（ch1）
-│   ├── app.rs          ← App::new / matches / config / inputs（ch1/ch2）
-│   ├── clap_app.rs     ← clap 参数定义（ch1）
+│   ├── main.rs         ← run() 分派表（t01）
+│   ├── app.rs          ← App::new / matches / config / inputs（t01）
+│   ├── clap_app.rs     ← clap 参数定义（t01）
 │   ├── assets.rs       ← assets_from_cache_or_binary（判断 2 的决策点）
 │   └── config.rs / directories.rs / completions.rs / input.rs
 ├── assets/ build/      ← 语法/主题 源定义 + 编译期 build_assets
@@ -37,28 +37,28 @@ bat/
 > 库调用方**不该**被迫依赖 `clap`（参数解析库），所以"命令行解析"全放 `src/bin/bat/`，
 > 库只暴露 `PrettyPrinter` 这种"喂输入、拿输出"的高层 API。
 
-## 二、模块分工（谁干什么，对应哪章）
+## 二、模块分工（谁干什么，对应哪篇 t）
 
-bat 单 crate，"模块"是 `src/` 下的文件。每个模块一句话 + 对应章节：
+bat 单 crate，"模块"是 `src/` 下的文件。每个模块一句话 + 对应篇：
 
 | 模块（src/） | 一句话 | 对应笔记 |
 |---|---|---|
-| `config.rs` | `Config` 28 字段：三级配置（文件/环境/CLI）的汇聚点 | ch2 |
-| `input.rs` | 打开文件、编码嗅探（UTF-8/16/二进制）、逐行读 | ch3 |
-| `assets.rs` | 语法/主题 双来源（内置二进制 / 用户缓存），按名取 syntax | ch4 |
-| `printer.rs` | 渲染核心：`Printer` trait + `InteractivePrinter`/`SimplePrinter` + 逐行 `print_line` | ch4、ch5 |
-| `decorations.rs` | `Decoration` 可插拔（行号/git/网格），`Vec<Box<dyn Decoration>>` | ch7 |
-| `preprocessor.rs` | 解码 / strip_ansi / sanitize（读"已上色"的文件） | ch5 |
-| `vscreen.rs` | 解析一行里藏的 ANSI 转义序列，切 Text 段 | ch5 |
-| `terminal.rs` | 终端宽度、行号宽度计算 | ch5 |
-| `wrapping.rs` | 换行/截断（Word/Character 模式） | ch5 |
-| `output.rs`/`less.rs`/`pager.rs`/`paging.rs` | 输出去哪（stdout / less 子进程 / 内嵌 minus）+ 防 IO 圈 | ch6 |
-| `diff.rs` | git 改动标记（`git` feature） | ch7 |
-| `style.rs` | 颜色、`StyleComponent` 开关 | ch7 |
+| `config.rs` | `Config` 28 字段：三级配置（文件/环境/CLI）的汇聚点 | t01 |
+| `input.rs` | 打开文件、编码嗅探（UTF-8/16/二进制）、逐行读 | t06 |
+| `assets.rs` | 语法/主题 双来源（内置二进制 / 用户缓存），按名取 syntax | t07 |
+| `printer.rs` | 渲染核心：`Printer` trait + `InteractivePrinter`/`SimplePrinter` + 逐行 `print_line` | t07、t08 |
+| `decorations.rs` | `Decoration` 可插拔（行号/git/网格），`Vec<Box<dyn Decoration>>` | t07 |
+| `preprocessor.rs` | 解码 / strip_ansi / sanitize（读"已上色"的文件） | t08 |
+| `vscreen.rs` | 解析一行里藏的 ANSI 转义序列，切 Text 段 | t08 |
+| `terminal.rs` | 终端宽度、行号宽度计算 | t08 |
+| `wrapping.rs` | 换行/截断（Word/Character 模式） | t08 |
+| `output.rs`/`less.rs`/`pager.rs`/`paging.rs` | 输出去哪（stdout / less 子进程 / 内嵌 minus）+ 防 IO 圈 | t05 |
+| `diff.rs` | git 改动标记（`git` feature） | t06、t07 |
+| `style.rs` | 颜色、`StyleComponent` 开关 | t07、t08 |
 | `error.rs` | `thiserror` 派生的 `enum Error`（库对外） | 判断 7 |
 
-bin 侧（`src/bin/bat/`）只做三件事：**解析参数**（`clap_app`/`app`）、
-**分派到各命令**（`main.rs` 的 `run()`，ch1）、**把 config/资产喂给库**（`assets.rs`/`config.rs`）。
+bin 侧（`src/bin/bat/`）只做三件事：**解析参数**（`clap_app`/`app`，t01）、
+**分派到各命令**（`main.rs` 的 `run()`，t01）、**把 config/资产喂给库**（`assets.rs`/`config.rs`，t05）。
 
 ## 三、贯穿全项目的 7 个架构判断
 
@@ -77,31 +77,31 @@ bin 侧（`src/bin/bat/`）只做三件事：**解析参数**（`clap_app`/`app`
 ```
 bat -n --theme Monokai foo.rs
   │
-  ▼  [bin] main() ──► run() 分派表（ch1）
+  ▼  [bin] main() ──► run() 分派表（t01）
   │     ├─ list-languages / list-themes / config-file / …  各成一条路
   │     └─ 默认 → run_controller()
   ▼
   [lib] Controller::run() → print_input()（src/controller.rs）
-  │     ├─ Input::open()（ch3：开文件、编码嗅探、缓存首行）
+  │     ├─ Input::open()（t06：开文件、编码嗅探、缓存首行）
   │     │   └─ InputReader::read_line  逐行读（UTF-8/16/二进制/unbuffered 各走各的）
   │     ▼
-  │     InteractivePrinter::new()（ch4：选 syntax + 装配 decorations）
-  │     ├─ assets.get_syntax()      -l → 路径 → 首行 → fallback（ch4）
+  │     InteractivePrinter::new()（t07：选 syntax + 装配 decorations）
+  │     ├─ assets.get_syntax()      -l → 路径 → 首行 → fallback（t07）
   │     └─ HighlightLines（syntect，每文件一个，跨行复用）
   │     ▼  每行：
-  │     print_line()（ch5：解码→高亮→挤压空行→画装饰→逐片段上色→写输出）
+  │     print_line()（t08：解码→高亮→挤压空行→画装饰→逐片段上色→写输出）
   │       └─ vscreen 解析 ANSI、terminal 算宽度、wrapping 折行
   │     ▼
-  ▼  OutputType（ch6：Stdout / Pager(less 子进程) / BuiltinPager(minus 线程)）
+  ▼  OutputType（t05：Stdout / Pager(less 子进程) / BuiltinPager(minus 线程)）
   │     └─ 防 IO 圈：输入==输出 时退化成 stdout
   ▼
-  退出码（Result<bool>：Ok(false) = 半成功/没匹配到，ch1）
+  退出码（Result<bool>：Ok(false) = 半成功/没匹配到，t09）
 ```
 
 ## 五、7 个判断深挖（读真实项目该带走的"为什么"）
 
 > 前 4 节是"图"，这节是每条判断**为什么**这么做的展开。
-> 逐行代码已在 ch1~ch8 覆盖，这里只讲设计判断，引用时给文件名不逐行贴。
+> 逐行代码已在 t01~t09 覆盖，这里只讲设计判断，引用时给文件名不逐行贴。
 
 ### 判断 1：库/bin 双身份（`src/lib.rs` vs `src/bin/bat/`）
 
@@ -121,15 +121,15 @@ bat 同时是库和 CLI，所以多了一层"lib API 怎么设计"的考量；ri
 
 `SimplePrinter`（纯文本，`loop_through` 时）和 `InteractivePrinter`（高亮+装饰）
 都实现 `Printer`，controller 用 `Box<dyn Printer>` 运行时二选一（`controller.rs:192`）。
-**为什么用 dyn 不用泛型**：`loop_through` 是**运行时**才知道的值（取决于 6 个条件，ch2），
-泛型要编译期定，没法用。代价是 vtable 调用，但渲染不是热点（热点在 ch4 syntect 高亮），可接受。
+**为什么用 dyn 不用泛型**：`loop_through` 是**运行时**才知道的值（取决于 6 个条件，t01 §3a），
+泛型要编译期定，没法用。代价是 vtable 调用，但渲染不是热点（热点在 t07 syntect 高亮），可接受。
 
 ### 判断 4：`Decoration` trait 对象（`src/decorations.rs`）
 
-装饰装进 `Vec<Box<dyn Decoration>>`，按 `style_components`（ch7）**运行时**决定挂哪些。
+装饰装进 `Vec<Box<dyn Decoration>>`，按 `style_components`（t07）**运行时**决定挂哪些。
 **为什么不用 enum**：装饰可**自由组合**（只有行号 / 行号+git / 全开），enum 要为每种
 组合写 match（组合爆炸）；trait 对象用 `Vec` 任意拼。开闭原则：加新装饰（如"行尾注释
-标记"）只需加一个实现 + 在 `new` 里多 push，**不改** controller / ch5 渲染循环。
+标记"）只需加一个实现 + 在 `new` 里多 push，**不改** controller / t08 渲染循环。
 每个装饰**自带 `width()`**，`panel_width` 累加所有装饰宽度，内容区 = 终端宽 − panel_width。
 
 ### 判断 5：`HighlightLines` 有状态，跨行复用（`src/printer.rs`）
@@ -138,7 +138,7 @@ syntect 语法定义是**状态机**：一行开了字符串没闭合、或开�
 高亮。`HighlightLines` 内部记住"上一行结尾在什么语法上下文"，所以**必须跨行保留**——
 每行 `print_line` 都新建它会"重新当行首解析"，高亮就乱。
 **设计**：`HighlighterFromSet`（包 `HighlightLines`）是 `InteractivePrinter` 的**实例字段**，
-不藏在函数里反复建。这是"有状态对象提层持有"的模式，和 ch3 `InputReader` 持 `first_line` 缓存同款。
+不藏在函数里反复建。这是"有状态对象提层持有"的模式，和 t06 `InputReader` 持 `first_line` 缓存同款。
 
 ### 判断 6：feature 门控（`#[cfg(feature = …)]` 贯穿全仓库）
 
@@ -146,7 +146,7 @@ syntect 语法定义是**状态机**：一行开了字符串没闭合、或开�
 把功能切成可选，同一份代码编出"完整版"和"精简版"。
 **为什么**：库调用方（判断 1）不该被拖进 `clap`/`gix`/`minus` 这些 CLI 专用依赖——
 关掉 `git`/`paging` 二进制小、编译快。代价：`#[cfg]` 代码"看着在但其实没编译"（feature 没开时），
-读代码要留意。全仓库到处是，前 8 章凡标 `git feature` 的地方都意味着"对应 feature 开才存在"。
+读代码要留意。全仓库到处是，t 系列凡标 `git feature` 的地方都意味着"对应 feature 开才存在"。
 
 ### 判断 7：错误——库用 `thiserror`，不引入 `anyhow`（`src/error.rs`）
 
@@ -179,10 +179,10 @@ ripgrep（纯 CLI）用 anyhow；bat（库+CLI）**库部分 thiserror、CLI 部
 
 ## 七、读代码的建议顺序
 
-1. 先读 **本文**（架构全貌）+ `plan.md`（数据流 5 步）。
-2. 按 ch1 → ch8 顺序读（已是数据流顺序）；第五节"7 个判断深挖"作为"为什么"的补充，
+1. 先读 **本文**（架构全貌）+ `plan.md`（执行树路线）。
+2. 按 t01 → t09 顺序读（已是执行树 DFS 顺序）；第五节"7 个判断深挖"作为"为什么"的补充，
    卡在"是代码细节还是设计意图"时回查。
-3. 每章读之前，先只看第二节"模块分工"表里对应的那一行，知道"这一章在哪个模块里"。
+3. 每篇读之前，先只看第二节"模块分工"表里对应的那一行，知道"这一篇在哪个模块里"。
 4. 卡住时回到第四节"数据流总图"，确认自己在哪一步。
 
 ## 八、学完带走的 bat 架构心法（5 个可复用模式）
@@ -206,8 +206,8 @@ ripgrep（纯 CLI）用 anyhow；bat（库+CLI）**库部分 thiserror、CLI 部
 1. 为什么"命令行解析"（`clap_app.rs`）放 bin 不放 lib？放 lib 会让库调用方多依赖什么？
 2. `assets_from_cache_or_binary` 版本不匹配时为什么**报错**而不是静默降级到内置？
 3. `Printer` 用 `Box<dyn>` 而不是泛型，根源是 `loop_through` 是**运行时**还是**编译期**的值？
-4. 加一个新装饰（如"行尾注释标记"），要改几处？要改 `controller.rs` 或 ch5 渲染循环吗？
+4. 加一个新装饰（如"行尾注释标记"），要改几处？要改 `controller.rs` 或 t08 渲染循环吗？
 5. 为什么 `HighlighterFromSet` 是 `InteractivePrinter` 的实例字段？每行 `print_line` 新建会出什么 bug？
-6. 关掉 `git` feature 编译 bat，ch7 的 `LineChangesDecoration` 还存在吗？`#[cfg]` 那段会编译进去吗？
+6. 关掉 `git` feature 编译 bat，t06/t07 的 `LineChangesDecoration` 还存在吗？`#[cfg]` 那段会编译进去吗？
 7. bat 作为库，调用方 `match` 一个 `bat::Error` 必须写 `..`，是为什么（`#[non_exhaustive]`）？
 8. bat（库+CLI）和 ripgrep（纯 CLI）的错误处理风格差在哪？哪个用了 anyhow？
