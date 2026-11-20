@@ -1,9 +1,0 @@
-[package]
-name = "minicat"
-version = "0.1.0"
-edition = "2021"
-
-# —— 第一版零外部依赖：手写参数解析，先把机制吃透 ——
-# 升级"层 1"（cli-yourself.md §2 层 1）时，解开下面注释并把 main() 换成 clap 版：
-# [dependencies]
-# clap = { version = "4", features = ["derive"] }

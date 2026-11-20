@@ -69,17 +69,9 @@ main()  [bin/bat/main.rs:471]
   主题与终端色（ANSI/truecolor）、**编译期资产（为什么把语法预编译进二进制）**、
   终端与分页（TTY/less）、字节与编码（UTF-8/16/二进制/全角宽）。
   每块"脱离代码讲清世界 → 锚定 bat 的 文件:行号"。t 里卡在某块知识上就翻对应小节。
-- **`cli-yourself.md`（动手桥接篇）**：前面全在"读懂 bat"，这篇补最后一环——**把读懂的
-  变成"能写自己的 CLI"**。给一个能 `cargo run` 的 minicat 骨架、4 层升级（抄 bat 哪个模式）、
-  "该抄/别抄"判断表、3 个递进练习。**学完 t09 + 读完 cli-domain 后动手做**，做完再回头看
-  bat 会通很多。
-- **`minicat/`（可运行项目）**：`cli-yourself.md` 那个骨架的真身，零依赖、已实测通过
-  （正常=0 / 缺文件=1 且提示在 stderr / 管道可读）。`cd .study/minicat && cargo run -- a.txt`。
-  动手从这里开始，每段 `main.rs` 都注释了对应 bat 哪篇。
 
 > **全套文档的角色分工**：`t01~t09`＝读懂 bat 的执行流（主干）；`cli-domain`＝读懂背后的
-> 领域知识；`architecture`＝读懂"为什么这么设计"；`cargo-toml`/`build`＝读懂编译期配置与资产；
-> **`cli-yourself`＝把读懂的变成动手写**（最后一块拼图）。
+> 领域知识；`architecture`＝读懂"为什么这么设计"；`cargo-toml`/`build`＝读懂编译期配置与资产。
 
 ## 学习节奏约定（DFS 版）
 
